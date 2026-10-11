@@ -103,20 +103,22 @@ function HomePage({ onGetStarted }) {
                 </a>
 
                 <nav className="nav-links">
-                    <a href="#templates">Templates</a>
-                    <a href="#how-it-works">How it works</a>
+                    <a href="#how-it-works">Wondering how it works?</a>
                 </nav>
 
-                <a
-                    className="nav-cta"
-                    href="#templates"
-                    onClick={(event) => {
-                        event.preventDefault();
-                        document.querySelector('#templates')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                >
-                    Start building <ArrowRight size={16} />
-                </a>
+                <div className="nav-actions">
+                    <Link to="/manage" className="nav-manage">My Portfolios</Link>
+                    <a
+                        className="nav-cta"
+                        href="#templates"
+                        onClick={(event) => {
+                            event.preventDefault();
+                            document.querySelector('#templates')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                    >
+                        Make Portfolio <ArrowRight size={16} />
+                    </a>
+                </div>
             </header>
 
             <main>

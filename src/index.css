@@ -113,6 +113,28 @@ a:focus-visible {
   color: var(--accent);
 }
 
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-manage {
+  min-height: 40px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  color: #526057;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.nav-manage:hover {
+  color: #d95740;
+}
+
 .nav-cta,
 .button-primary,
 .button-secondary {
@@ -3305,11 +3327,21 @@ textarea:focus-visible {
   .navbar {
     min-height: 64px;
     padding: 12px 20px;
+    flex-wrap: wrap;
+    row-gap: 10px;
   }
 
   .nav-links {
+    order: 3;
+    width: 100%;
+    flex-basis: 100%;
     gap: 15px;
     font-size: 11px;
+  }
+
+  .nav-actions {
+    margin-left: auto;
+    gap: 6px;
   }
 
   .nav-cta {
@@ -3469,6 +3501,11 @@ textarea:focus-visible {
 
   .nav-cta {
     padding: 0 9px;
+  }
+
+  .nav-manage {
+    padding: 0 6px;
+    font-size: 10px;
   }
 
   .hero {
