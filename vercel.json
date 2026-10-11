@@ -1,0 +1,24 @@
+{
+    "rewrites": [
+        {
+            "source": "/manage",
+            "destination": "/"
+        },
+        {
+            "source": "/editor",
+            "destination": "/"
+        },
+        {
+            "source": "/editor/:id",
+            "destination": "/"
+        },
+        {
+            "source": "/examples/:template",
+            "destination": "/"
+        },
+        {
+            "source": "/p/:id",
+            "destination": "/"
+        }
+    ]
+}
