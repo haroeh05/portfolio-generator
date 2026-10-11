@@ -15,8 +15,8 @@ A responsive React website for creating portfolios, saving them to Supabase, cho
 - Enter name, profile picture, email, phone, location, biography, education, skills, projects, work experience, and social or website links.
 - Add and remove repeatable education, project, experience, and social-link entries.
 - Preview content while editing and select from exactly three templates.
-- Open a complete sample portfolio for each template at `/examples/simple`, `/examples/modern`, or `/examples/creative` without saving sample data to Supabase.
-- Open a complete sample portfolio for each template without saving sample data to Supabase.
+- Open complete sample portfolios at `/examples/simple`, `/examples/modern`, and `/examples/creative` without saving sample data to Supabase.
+- Use a sample's template to start a blank portfolio in the editor.
 - Save and retrieve records from Supabase; edit and delete them from the manager.
 - Keep portfolios private by default. Published portfolios are readable from `/p/:id`.
 - Upload profile images to the public `profile-images` storage bucket, with writes scoped to the signed-in anonymous user.
@@ -94,4 +94,4 @@ Vercel CLI is not installed or authenticated in the current workspace, so no pub
 ![Published Creative portfolio](screenshots/template-creative.png)
 
 The template screenshots use built-in sample data. The manager and editor screenshots show a temporary QA portfolio that was deleted from Supabase after capture.
-# LaravelTest-001
+# portfolio-generator
