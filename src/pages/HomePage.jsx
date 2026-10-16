@@ -124,7 +124,7 @@ function HomePage({ onGetStarted }) {
             <main>
                 <section className="hero" id="home">
                     <div className="hero-copy">
-                        <div className="eyebrow"><Sparkles size={15} /> YOUR WORK, OUT IN THE WORLD</div>
+                        <div className="eyebrow"><Sparkles size={15} /> DO IT CLEANLY! </div>
 
                         <h1>
                             Make your next
@@ -184,7 +184,7 @@ function HomePage({ onGetStarted }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="hero-art-caption"><span className="status-dot" /> A good first impression, made yours.</div>
+                        <div className="hero-art-caption"><span className="status-dot" /> Create </div>
                     </div>
                 </section>
 

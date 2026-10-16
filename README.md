@@ -1,97 +1,159 @@
-# PortGen: Online Portfolio Template Generator
+# PortGen — Online Portfolio Template Generator
 
-A responsive React website for creating portfolios, saving them to Supabase, choosing one of three designs, and publishing a shareable portfolio page.
+PortGen is a responsive website for creating, saving, previewing, and sharing an online portfolio. Users enter their information, choose one of three designs, and save the portfolio to Supabase. A portfolio can remain private or be published at a shareable URL.
 
-## Submission Status
+## Project status
 
-- **Published website:** Not deployed yet. A hosting account and deployment are still required. Do not submit the local development URL as the public website URL.
-- **Target hosting platform:** Vercel. SPA rewrites for direct visits and refreshes on `/manage`, `/editor/:id`, `/examples/:template`, and `/p/:id` are in `vercel.json`.
-- **Database:** Supabase Postgres and Supabase Storage.
+- **Published website:** Not deployed from this source snapshot. Deploy the project and replace this line with the working public URL before submission.
+- **Database:** Supabase (Postgres, anonymous authentication, and Storage).
+- **Hosting target:** Vercel static hosting.
 - **Templates:** Simple, Modern, and Creative.
-- **Screenshots:** Home page, manager, editor, and all three public templates are included below.
+
+The local development URL is not a public submission URL.
 
 ## Features
 
-- Enter name, profile picture, email, phone, location, biography, education, skills, projects, work experience, and social or website links.
-- Add and remove repeatable education, project, experience, and social-link entries.
-- Preview content while editing and select from exactly three templates.
-- Open complete sample portfolios at `/examples/simple`, `/examples/modern`, and `/examples/creative` without saving sample data to Supabase.
-- Use a sample's template to start a blank portfolio in the editor.
-- Save and retrieve records from Supabase; edit and delete them from the manager.
-- Keep portfolios private by default. Published portfolios are readable from `/p/:id`.
-- Upload profile images to the public `profile-images` storage bucket, with writes scoped to the signed-in anonymous user.
+- Create a portfolio with a required full name and optional profile picture, email, contact number, address, and biography.
+- Add multiple education, project, work-experience, and social-link entries; edit or remove entries in the form.
+- Enter skills as a comma-separated list.
+- Switch between exactly three templates and see a live preview while editing.
+- Save, retrieve, update, and delete portfolios stored in Supabase.
+- Keep portfolios private by default. Opt in to publishing and share the public `/p/:id` link.
+- Upload JPG, PNG, or WebP profile pictures up to 2 MB to Supabase Storage.
+- View sample portfolios at `/examples/simple`, `/examples/modern`, and `/examples/creative`. Examples use built-in data and do not create database records.
+
+## Templates
+
+| Template | Design |
+| --- | --- |
+| **Simple** | Clean, centered presentation with a light neutral palette and restrained sections. |
+| **Modern** | Dark green, structured layout with a strong hero and organized content cards. |
+| **Creative** | Expressive forest-green design with lime accents, abstract shapes, and illustrated project panels. |
+
+The template picker is part of the portfolio editor; it is not a separate route. Users can change the template before saving or while editing a saved portfolio.
 
 ## Technologies
 
-- React 19, React Router, Vite, and Lucide React
-- Supabase Postgres, anonymous authentication, row-level security, and Storage
-- Vercel for the intended static-site deployment
+- React 19
+- React Router
+- Vite
+- Lucide React
+- Supabase JavaScript client
+- Supabase Postgres, Row Level Security (RLS), anonymous authentication, and Storage
+- Vercel (intended deployment platform)
 
-## Supabase Setup
+## Application routes
 
-For a **new Supabase project**:
+| Route | Purpose |
+| --- | --- |
+| `/` | Home page, template overview, and links to start creating a portfolio. |
+| `/editor?template=simple` | Create a portfolio, preselecting the requested template. The `modern` and `creative` values are also supported. |
+| `/editor/:id` | Edit a portfolio belonging to the current anonymous Supabase session. |
+| `/manage` | List, edit, delete, and access the public links for portfolios in the current session. |
+| `/examples/:template` | Display a built-in example for `simple`, `modern`, or `creative`. |
+| `/p/:id` | Display a portfolio only when it has been published. |
 
-1. Enable anonymous sign-ins in Supabase Authentication settings.
-2. Run [`supabase-setup.sql`](supabase-setup.sql) in the SQL Editor. It creates the portfolio table, owner/public RLS policies, update timestamp trigger, and image bucket policies.
-3. Copy `.env.example` to `.env.local` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to that project's values.
-4. Never put a Supabase secret or service-role key in a `VITE_` variable or browser code.
+Vercel rewrites application routes to the SPA entry point so direct navigation and refresh work for these routes.
 
-For the already configured project, keep its existing table and owner policies. Run [`supabase-publish-migration.sql`](supabase-publish-migration.sql) only if `is_published` and the published-row policy have not already been added. Do not run the fresh-project setup over an existing database without reviewing it first.
+## Data and privacy
 
-### Database Structure
+The `public.portfolios` table stores:
 
-The `public.portfolios` table stores a UUID, owner UUID, contact/profile fields, `is_published`, timestamps, and JSONB arrays for education, skills, projects, work experience, and social links. The `profile-images` Storage bucket is public for image display; upload and delete policies restrict paths to the authenticated user's UUID folder. RLS restricts private records and all writes to their owner while allowing public reads only for published records.
+- Portfolio ID, owner ID, creation time, and last-updated time.
+- Name, email, contact number, address, biography, and profile image URL.
+- Education, skills, projects, work experience, and social links as JSONB arrays.
+- Template key (`simple`, `modern`, or `creative`) and the `is_published` flag.
 
-This app uses Supabase anonymous sessions rather than user accounts. A visitor's private manager is tied to that browser's anonymous session; published pages are shared through their public link.
+`supabase-setup.sql` creates the table, a timestamp trigger, RLS policies, and the `profile-images` Storage bucket and upload/delete policies. Owners can read and manage their own portfolios. Public visitors can read published portfolios; unpublished portfolio records are not available through the public portfolio page.
 
-## Run Locally
+PortGen currently uses **anonymous Supabase sessions instead of email/password accounts**. A user's private portfolio manager is tied to the anonymous session retained by that browser. Clearing browser storage or switching browsers/devices may make that private workspace unavailable. Published portfolios can be viewed by anyone with their public link.
+
+The `profile-images` bucket is public so portfolio pages can display uploaded images. Upload and delete operations are restricted by Storage policy to the authenticated anonymous user's folder. Do not store sensitive information in a public portfolio or profile image.
+
+## Supabase setup
+
+1. Create a Supabase project.
+2. In Supabase Authentication settings, enable anonymous sign-ins.
+3. Open the Supabase SQL Editor and run [`supabase-setup.sql`](./supabase-setup.sql) for a new project. It creates the schema, owner/public access policies, trigger, and storage configuration.
+4. For an existing database that already has the portfolio table and owner policies, review the schema first. If publishing has not been configured, run [`supabase-publish-migration.sql`](./supabase-publish-migration.sql). Do not run the fresh-project setup blindly over an existing production database.
+5. Create `.env.local` in the project root with the project URL and publishable key:
+
+   ```dotenv
+   VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
+   ```
+
+   Use the values for your Supabase project. The publishable key is intended for client-side use and must be protected by correct RLS policies. **Never put a Supabase secret/service-role key in a `VITE_` variable or commit it to source control.**
+
+The app throws a configuration error at startup if either environment variable is missing.
+
+## Run locally
+
+Requirements: Node.js and npm.
 
 ```sh
 npm install
 npm run dev
 ```
 
-For a production build:
+Vite prints the local URL when the development server starts. This URL is for development only.
+
+Useful commands:
 
 ```sh
-npm run build
-npm run preview
+npm run build    # Create the production bundle in dist/
+npm run preview  # Serve the production bundle locally
+npm run lint     # Run Oxlint
 ```
 
 ## Deploy to Vercel
 
-1. Import the source repository into Vercel and keep the Vite defaults (`npm run build`, output directory `dist`).
-2. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` under the Vercel project's environment variables for Production and Preview.
-3. Deploy, then test creating, publishing, opening, editing, and deleting a portfolio on the deployed domain. Test a direct refresh on `/p/<portfolio-id>` as well.
-4. Replace the **Published website** status above with the deployed URL.
+1. Import the repository into Vercel.
+2. Use the Vite build command `npm run build` and output directory `dist`.
+3. Configure `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in the Vercel project's environment variables for the environments you will deploy.
+4. Deploy the site.
+5. Test the deployed site end to end: create a portfolio, save it, refresh and verify it remains in the manager, edit it, publish it, open `/p/:id` in a signed-out/private browser, and delete it.
+6. Replace the project status at the top of this README with the deployed public URL. Do not submit a localhost URL.
 
-Vercel CLI is not installed or authenticated in the current workspace, so no public deployment URL can be claimed from this source tree alone.
+The repository includes [`vercel.json`](./vercel.json) with SPA rewrites for `/manage`, `/editor`, `/editor/:id`, `/examples/:template`, and `/p/:id`.
 
 ## Screenshots
 
-### Home
+Existing captures are in [`screenshots/`](./screenshots/):
 
-![Home page and template choices](screenshots/home.png)
+- The home and Creative template screenshots were recaptured on 2026-10-16 to show the latest homepage mockup and forest-green/lime Creative design.
+- [Home page](./screenshots/home.png)
+- [Portfolio manager](./screenshots/manage.png)
+- [Portfolio editor](./screenshots/editor.png)
+- [Simple template](./screenshots/template-simple.png)
+- [Modern template](./screenshots/template-modern.png)
+- [Creative template](./screenshots/template-creative.png)
 
-### Portfolio Manager
+The example data on the template pages is built into the app; the manager/editor captures use temporary QA data.
 
-![Portfolio manager](screenshots/manage.png)
+## Project structure
 
-### Portfolio Editor
+```text
+.
+├── public/                         # Static public assets
+├── screenshots/                    # UI captures
+├── src/
+│   ├── components/                 # Shared layout components
+│   ├── lib/                        # Supabase client, auth, and example data
+│   ├── pages/                      # Home, editor, manager, and public portfolio
+│   ├── App.jsx                     # Routes
+│   ├── index.css                   # Application and template styles
+│   └── main.jsx                    # React entry point
+├── supabase-setup.sql              # Fresh Supabase database/storage setup
+├── supabase-publish-migration.sql  # Publishing migration for existing projects
+├── vercel.json                     # SPA rewrites for Vercel
+└── vite.config.js                  # Vite configuration
+```
 
-![Portfolio editor and live preview](screenshots/editor.png)
+## Submission checklist
 
-### Simple Template
-
-![Published Simple portfolio](screenshots/template-simple.png)
-
-### Modern Template
-
-![Published Modern portfolio](screenshots/template-modern.png)
-
-### Creative Template
-
-![Published Creative portfolio](screenshots/template-creative.png)
-
-The template screenshots use built-in sample data. The manager and editor screenshots show a temporary QA portfolio that was deleted from Supabase after capture.
-# portfolio-generator
+- [ ] Deploy the website and add the working public URL above.
+- [ ] Confirm the Supabase project is online and configured with the included schema and policies.
+- [ ] Test create, save, retrieve, edit, publish, public-view, and delete flows on the deployed site.
+- [ ] Refresh the home and Creative screenshots after the latest design changes.
+- [ ] Submit the source code and database platform information. Never submit passwords, secret keys, or service-role keys.
