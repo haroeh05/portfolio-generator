@@ -1,15 +1,10 @@
-# PortGen — Online Portfolio Template Generator
+## Project Information
 
-PortGen is a responsive website for creating, saving, previewing, and sharing an online portfolio. Users enter their information, choose one of three designs, and save the portfolio to Supabase. A portfolio can remain private or be published at a shareable URL.
-
-## Project status
-
-- **Published website:** Not deployed from this source snapshot. Deploy the project and replace this line with the working public URL before submission.
+- **Published website:** [https://portfolio-generator-virid-five.vercel.app/]
 - **Database:** Supabase (Postgres, anonymous authentication, and Storage).
+- **Database Project:** PortGen - Is a responsive website for creating, saving, previewing, and sharing an online portfolio. Users enter their information, choose one of three designs, and save the portfolio to Supabase. A portfolio can remain private or be published at a shareable URL
 - **Hosting target:** Vercel static hosting.
 - **Templates:** Simple, Modern, and Creative.
-
-The local development URL is not a public submission URL.
 
 ## Features
 
@@ -150,10 +145,14 @@ The example data on the template pages is built into the app; the manager/editor
 └── vite.config.js                  # Vite configuration
 ```
 
-## Submission checklist
+## Group 1 - Section 7
 
-- [ ] Deploy the website and add the working public URL above.
-- [ ] Confirm the Supabase project is online and configured with the included schema and policies.
-- [ ] Test create, save, retrieve, edit, publish, public-view, and delete flows on the deployed site.
-- [ ] Refresh the home and Creative screenshots after the latest design changes.
-- [ ] Submit the source code and database platform information. Never submit passwords, secret keys, or service-role keys.
+Members:
+
+- Gacang, Clyde A.
+- Jugan, Ranier JR. G.
+- Jumamoy, Rhyn Angelo Y.
+- Lutchavez, Khurt Miguel C.
+- Diacoma, Via D.
+- Trazo, Haroeh
+- Tumongha, Jan Thomas

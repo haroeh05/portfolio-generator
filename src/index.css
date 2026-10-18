@@ -1891,7 +1891,7 @@ textarea:focus-visible {
 }
 
 .brand-dot {
-  color: #d95740;
+  color: inherit;
 }
 
 .nav-links {
