@@ -1,8 +1,24 @@
 
-import { Link, Outlet } from 'react-router-dom';
-import { ArrowUpRight, Layers3 } from 'lucide-react';
+import { useState } from 'react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Layers3 } from 'lucide-react';
+import { useAuth } from '../lib/useAuth';
 
 export default function AppLayout() {
+    const { user, signOut } = useAuth();
+    const navigate = useNavigate();
+    const [error, setError] = useState('');
+
+    async function handleSignOut() {
+        setError('');
+        try {
+            await signOut();
+            navigate('/login', { replace: true });
+        } catch (signOutError) {
+            setError(signOutError.message || 'Unable to sign out.');
+        }
+    }
+
     return (
         <>
             <header className="app-nav">
@@ -11,12 +27,12 @@ export default function AppLayout() {
                 <nav>
                     <Link to="/">Home</Link>
                     <Link to="/manage">My Portfolios</Link>
-                    <Link to="/editor" className="app-nav-cta">
-                        Create portfolio <ArrowUpRight size={15} />
-                    </Link>
+                    <span className="app-nav-user">{user?.user_metadata?.username || user?.email}</span>
+                    <button type="button" className="app-nav-signout" onClick={handleSignOut}>Sign out</button>
                 </nav>
             </header>
 
+            {error && <div className="page-container"><div className="notice notice-error" role="alert">{error}</div></div>}
             <Outlet />
         </>
     );

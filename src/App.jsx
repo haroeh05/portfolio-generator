@@ -4,6 +4,9 @@ import PortfolioEditor from './pages/PortfolioEditor.jsx';
 import ManagePortfolios from './pages/ManagePortfolios.jsx';
 import PublicPortfolio from './pages/PublicPortfolio.jsx';
 import AppLayout from './components/AppLayout.jsx';
+import RequireAuth from './components/RequireAuth.jsx';
+import AuthPage from './pages/AuthPage.jsx';
+import { AuthProvider } from './lib/AuthContext.jsx';
 
 function HomePageRoute() {
     const navigate = useNavigate();
@@ -14,17 +17,22 @@ function HomePageRoute() {
 export default function App() {
     return (
         <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<HomePageRoute />} />
-                <Route path="/examples/:template" element={<PublicPortfolio isExample />} />
-                <Route path="/p/:id" element={<PublicPortfolio />} />
-                <Route element={<AppLayout />}>
-                    <Route path="/editor" element={<PortfolioEditor />} />
-                    <Route path="/editor/:id" element={<PortfolioEditor />} />
-                    <Route path="/manage" element={<ManagePortfolios />} />
-                </Route>
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+            <AuthProvider>
+                <Routes>
+                    <Route path="/" element={<HomePageRoute />} />
+                    <Route path="/login" element={<AuthPage />} />
+                    <Route path="/examples/:template" element={<PublicPortfolio isExample />} />
+                    <Route path="/p/:id" element={<PublicPortfolio />} />
+                    <Route element={<RequireAuth />}>
+                        <Route element={<AppLayout />}>
+                            <Route path="/editor" element={<PortfolioEditor />} />
+                            <Route path="/editor/:id" element={<PortfolioEditor />} />
+                            <Route path="/manage" element={<ManagePortfolios />} />
+                        </Route>
+                    </Route>
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </AuthProvider>
         </BrowserRouter>
     );
 }

@@ -1,8 +1,8 @@
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ensureSession } from '../lib/auth';
+import { requireAuthenticatedUser } from '../lib/auth';
 
 const emptyPortfolio = {
     full_name: '',
@@ -72,6 +72,37 @@ function isValidUrl(value) {
     }
 }
 
+function PortfolioLivePreview({ form, skillsText, imagePreview }) {
+    const skills = skillsText.split(',').map(skill => skill.trim()).filter(Boolean);
+
+    return (
+        <section className={`editor-live-preview public-portfolio public-${form.template || 'simple'}`} aria-live="polite">
+            <div className="editor-preview-heading">
+                <div><p className="eyebrow">LIVE PREVIEW</p><h2>Your portfolio updates as you type</h2></div>
+                <span className="editor-preview-template">{({ simple: 'Simple', modern: 'Modern', creative: 'Creative' })[form.template] || 'Simple'} template</span>
+            </div>
+            <div className="editor-preview-canvas">
+                <header className="public-hero editor-preview-hero">
+                    {imagePreview ? <img className="public-avatar" src={imagePreview} alt="Profile preview" /> : <div className="public-avatar public-avatar-placeholder">{(form.full_name || '?').charAt(0).toUpperCase()}</div>}
+                    <p className="public-kicker">PORTFOLIO</p>
+                    <h1>{form.full_name || 'Your name'}</h1>
+                    {form.about_me && <p className="public-about">{form.about_me}</p>}
+                    <div className="public-contact">
+                        {form.email && <span>{form.email}</span>}
+                        {form.contact_number && <span>{form.contact_number}</span>}
+                        {form.address && <span>{form.address}</span>}
+                    </div>
+                </header>
+                {skills.length > 0 && <section className="public-section"><h2>Skills</h2><div className="public-skills">{skills.map((skill, i) => <span key={`${skill}-${i}`}>{skill}</span>)}</div></section>}
+                {form.projects.some(item => item.name || item.description) && <section className="public-section"><h2>Selected projects</h2><div className="public-cards">{form.projects.filter(item => item.name || item.description).map((item, i) => <article className="public-card" key={`${item.name}-${i}`}><h3>{item.name || 'Project'}</h3>{item.description && <p>{item.description}</p>}{item.technologies && <p className="public-muted">{item.technologies}</p>}</article>)}</div></section>}
+                {form.work_experience.some(item => item.position || item.company || item.description) && <section className="public-section"><h2>Experience</h2>{form.work_experience.filter(item => item.position || item.company || item.description).map((item, i) => <article className="public-timeline" key={`${item.position}-${i}`}><h3>{item.position || 'Experience'}{item.company ? ` · ${item.company}` : ''}</h3>{item.period && <p className="public-muted">{item.period}</p>}{item.description && <p>{item.description}</p>}</article>)}</section>}
+                {form.education.some(item => item.school || item.degree || item.details) && <section className="public-section"><h2>Education</h2>{form.education.filter(item => item.school || item.degree || item.details).map((item, i) => <article className="public-timeline" key={`${item.school}-${i}`}><h3>{item.school || 'Education'}</h3>{item.degree && <p>{item.degree}</p>}{item.year && <p className="public-muted">{item.year}</p>}{item.details && <p>{item.details}</p>}</article>)}</section>}
+                <footer className="public-footer">Made with <strong>PortGen</strong></footer>
+            </div>
+        </section>
+    );
+}
+
 export default function PortfolioEditor() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -103,7 +134,7 @@ export default function PortfolioEditor() {
             setError('');
 
             try {
-                await ensureSession();
+                await requireAuthenticatedUser();
 
                 const { data, error: fetchError } = await supabase
                     .from('portfolios')
@@ -231,7 +262,7 @@ export default function PortfolioEditor() {
         let newlyUploadedPath = null;
 
         try {
-            const user = await ensureSession();
+            const user = await requireAuthenticatedUser();
 
             const oldImageUrl = form.profile_picture_url || '';
             let imageUrl = removeImage ? null : oldImageUrl;
@@ -353,7 +384,7 @@ export default function PortfolioEditor() {
             <div className="page-heading">
                 <div>
                     <p className="eyebrow">YOUR WORKSPACE</p>
-                    <h1>{id ? 'Edit portfolio' : 'Create your portfolio'}</h1>
+                    <h1>{id ? 'Edit portfolio' : 'New portfolio'}</h1>
                     <p>Enter your information and save it securely to your account.</p>
                 </div>
                 <Link to="/manage" className="button button-secondary">
@@ -364,30 +395,7 @@ export default function PortfolioEditor() {
             {error && <div className="notice notice-error" role="alert">{error}</div>}
             {message && <div className="notice notice-success" role="status">{message}</div>}
 
-            <section className={`editor-live-preview public-portfolio public-${form.template || 'simple'}`} aria-live="polite">
-                <div className="editor-preview-heading">
-                    <div><p className="eyebrow">LIVE PREVIEW</p><h2>Your portfolio updates as you type</h2></div>
-                    <span className="editor-preview-template">{({ simple: 'Simple', modern: 'Modern', creative: 'Creative' })[form.template] || 'Simple'} template</span>
-                </div>
-                <div className="editor-preview-canvas">
-                    <header className="public-hero editor-preview-hero">
-                        {imagePreview ? <img className="public-avatar" src={imagePreview} alt="Profile preview" /> : <div className="public-avatar public-avatar-placeholder">{(form.full_name || '?').charAt(0).toUpperCase()}</div>}
-                        <p className="public-kicker">PORTFOLIO</p>
-                        <h1>{form.full_name || 'Your name'}</h1>
-                        {form.about_me && <p className="public-about">{form.about_me}</p>}
-                        <div className="public-contact">
-                            {form.email && <span>{form.email}</span>}
-                            {form.contact_number && <span>{form.contact_number}</span>}
-                            {form.address && <span>{form.address}</span>}
-                        </div>
-                    </header>
-                    {skillsText.split(',').map(skill => skill.trim()).filter(Boolean).length > 0 && <section className="public-section"><h2>Skills</h2><div className="public-skills">{skillsText.split(',').map(skill => skill.trim()).filter(Boolean).map((skill, i) => <span key={`${skill}-${i}`}>{skill}</span>)}</div></section>}
-                    {form.projects.some(item => item.name || item.description) && <section className="public-section"><h2>Selected projects</h2><div className="public-cards">{form.projects.filter(item => item.name || item.description).map((item, i) => <article className="public-card" key={`${item.name}-${i}`}><h3>{item.name || 'Project'}</h3>{item.description && <p>{item.description}</p>}{item.technologies && <p className="public-muted">{item.technologies}</p>}</article>)}</div></section>}
-                    {form.work_experience.some(item => item.position || item.company || item.description) && <section className="public-section"><h2>Experience</h2>{form.work_experience.filter(item => item.position || item.company || item.description).map((item, i) => <article className="public-timeline" key={`${item.position}-${i}`}><h3>{item.position || 'Experience'}{item.company ? ` · ${item.company}` : ''}</h3>{item.period && <p className="public-muted">{item.period}</p>}{item.description && <p>{item.description}</p>}</article>)}</section>}
-                    {form.education.some(item => item.school || item.degree || item.details) && <section className="public-section"><h2>Education</h2>{form.education.filter(item => item.school || item.degree || item.details).map((item, i) => <article className="public-timeline" key={`${item.school}-${i}`}><h3>{item.school || 'Education'}</h3>{item.degree && <p>{item.degree}</p>}{item.year && <p className="public-muted">{item.year}</p>}{item.details && <p>{item.details}</p>}</article>)}</section>}
-                    <footer className="public-footer">Made with <strong>PortGen</strong></footer>
-                </div>
-            </section>
+            <PortfolioLivePreview form={form} skillsText={skillsText} imagePreview={imagePreview} />
 
             <form className="portfolio-form" onSubmit={handleSubmit}>
                 <section className="form-card">
@@ -470,56 +478,61 @@ export default function PortfolioEditor() {
                 </section>
 
                 {sections.map(section => (
-                    <section className="form-card" key={section.key}>
-                        <div className="section-heading">
-                            <h2>{section.title}</h2>
-                            <button
-                                type="button"
-                                className="button button-secondary"
-                                onClick={() => addItem(section.key, section.fields)}
-                            >
-                                + Add {section.title.replace(/s$/, '')}
-                            </button>
-                        </div>
-
-                        {form[section.key].length === 0 && (
-                            <p className="muted">Nothing added yet. You can add this later.</p>
-                        )}
-
-                        {form[section.key].map((item, index) => (
-                            <div className="repeat-item" key={`${section.key}-${index}`}>
-                                {section.fields.map(([field, label]) => (
-                                    <label key={field}>
-                                        {label}
-                                        {field === 'description' || field === 'details' ? (
-                                            <textarea
-                                                rows={3}
-                                                value={item[field] || ''}
-                                                onChange={e =>
-                                                    updateItem(section.key, index, field, e.target.value)
-                                                }
-                                            />
-                                        ) : (
-                                            <input
-                                                value={item[field] || ''}
-                                                onChange={e =>
-                                                    updateItem(section.key, index, field, e.target.value)
-                                                }
-                                            />
-                                        )}
-                                    </label>
-                                ))}
-
+                    <Fragment key={section.key}>
+                        <section className="form-card">
+                            <div className="section-heading">
+                                <h2>{section.title}</h2>
                                 <button
                                     type="button"
-                                    className="text-danger"
-                                    onClick={() => removeItem(section.key, index)}
+                                    className="button button-secondary"
+                                    onClick={() => addItem(section.key, section.fields)}
                                 >
-                                    Remove
+                                    + Add {section.title.replace(/s$/, '')}
                                 </button>
                             </div>
-                        ))}
-                    </section>
+
+                            {form[section.key].length === 0 && (
+                                <p className="muted">Nothing added yet. You can add this later.</p>
+                            )}
+
+                            {form[section.key].map((item, index) => (
+                                <div className="repeat-item" key={`${section.key}-${index}`}>
+                                    {section.fields.map(([field, label]) => (
+                                        <label key={field}>
+                                            {label}
+                                            {field === 'description' || field === 'details' ? (
+                                                <textarea
+                                                    rows={3}
+                                                    value={item[field] || ''}
+                                                    onChange={e =>
+                                                        updateItem(section.key, index, field, e.target.value)
+                                                    }
+                                                />
+                                            ) : (
+                                                <input
+                                                    value={item[field] || ''}
+                                                    onChange={e =>
+                                                        updateItem(section.key, index, field, e.target.value)
+                                                    }
+                                                />
+                                            )}
+                                        </label>
+                                    ))}
+
+                                    <button
+                                        type="button"
+                                        className="text-danger"
+                                        onClick={() => removeItem(section.key, index)}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            ))}
+                        </section>
+                        {section.key === 'work_experience' && (
+                            <PortfolioLivePreview form={form} skillsText={skillsText} imagePreview={imagePreview} />
+                        )}
+                    </Fragment>
                 ))}
 
                 <section className="form-card">
@@ -534,6 +547,7 @@ export default function PortfolioEditor() {
                         />
                     </label>
                 </section>
+
 
                 <section className="form-card">
                     <h2>Choose a template</h2>
@@ -574,10 +588,12 @@ export default function PortfolioEditor() {
                     <p className="field-help">When published, anyone with the share link can view this portfolio. Your editing and deletion permissions remain private.</p>
                 </section>
 
+                <PortfolioLivePreview form={form} skillsText={skillsText} imagePreview={imagePreview} />
+
                 <div className="form-actions">
                     <Link to="/manage" className="button button-secondary">Cancel</Link>
                     <button className="button button-primary" type="submit" disabled={saving}>
-                        {saving ? 'Saving...' : id ? 'Save changes' : 'Create portfolio'}
+                        {saving ? 'Saving...' : id ? 'Save changes' : 'Save portfolio'}
                     </button>
                 </div>
             </form>

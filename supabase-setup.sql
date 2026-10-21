@@ -42,34 +42,122 @@ grant usage on schema public to anon, authenticated;
 grant select on public.portfolios to anon, authenticated;
 grant insert, update, delete on public.portfolios to authenticated;
 
+create schema if not exists app_private;
+revoke all on schema app_private from public, anon, authenticated;
+
+create table if not exists app_private.account_usernames (
+  username text primary key
+    check (username ~ '^[a-z0-9_]{3,24}$'),
+  user_id uuid not null unique references auth.users (id) on delete cascade,
+  email text not null unique
+);
+
+alter table app_private.account_usernames enable row level security;
+revoke all on table app_private.account_usernames from public, anon, authenticated;
+
+create or replace function public.lookup_account_email_for_username(p_username text)
+returns text
+language sql
+security definer
+set search_path = ''
+as $$
+  select account.email
+  from app_private.account_usernames as account
+  where account.username = pg_catalog.lower(pg_catalog.btrim(p_username));
+$$;
+
+revoke all on function public.lookup_account_email_for_username(text)
+  from public, anon, authenticated;
+grant execute on function public.lookup_account_email_for_username(text)
+  to service_role;
+
+create or replace function public.register_username_for_account(
+  p_username text,
+  p_email text,
+  p_user_id uuid
+)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  normalized_username text := pg_catalog.lower(pg_catalog.btrim(p_username));
+  account_email text;
+begin
+  if normalized_username !~ '^[a-z0-9_]{3,24}$' then
+    raise exception 'Invalid username';
+  end if;
+
+  select users.email into account_email
+  from auth.users as users
+  where users.id = p_user_id;
+
+  if account_email is null or pg_catalog.lower(account_email) <> pg_catalog.lower(pg_catalog.btrim(p_email)) then
+    raise exception 'Account email does not match';
+  end if;
+
+  insert into app_private.account_usernames (username, user_id, email)
+  values (normalized_username, p_user_id, account_email);
+end;
+$$;
+
+revoke all on function public.register_username_for_account(text, text, uuid)
+  from public, anon, authenticated;
+grant execute on function public.register_username_for_account(text, text, uuid)
+  to service_role;
+
 drop policy if exists "Portfolio owners and public visitors can read" on public.portfolios;
-create policy "Portfolio owners and public visitors can read"
+drop policy if exists "Portfolio owners can read own" on public.portfolios;
+create policy "Portfolio owners can read own"
+  on public.portfolios
+  for select
+  to authenticated
+  using (
+    user_id = (select auth.uid())
+    and (select auth.jwt() ->> 'is_anonymous') = 'false'
+  );
+
+drop policy if exists "Anyone can view published portfolios" on public.portfolios;
+create policy "Anyone can view published portfolios"
   on public.portfolios
   for select
   to anon, authenticated
-  using (is_published = true or user_id = (select auth.uid()));
+  using (is_published = true);
 
 drop policy if exists "Portfolio owners can insert" on public.portfolios;
 create policy "Portfolio owners can insert"
   on public.portfolios
   for insert
   to authenticated
-  with check (user_id = (select auth.uid()));
+  with check (
+    user_id = (select auth.uid())
+    and (select auth.jwt() ->> 'is_anonymous') = 'false'
+  );
 
 drop policy if exists "Portfolio owners can update" on public.portfolios;
 create policy "Portfolio owners can update"
   on public.portfolios
   for update
   to authenticated
-  using (user_id = (select auth.uid()))
-  with check (user_id = (select auth.uid()));
+  using (
+    user_id = (select auth.uid())
+    and (select auth.jwt() ->> 'is_anonymous') = 'false'
+  )
+  with check (
+    user_id = (select auth.uid())
+    and (select auth.jwt() ->> 'is_anonymous') = 'false'
+  );
 
 drop policy if exists "Portfolio owners can delete" on public.portfolios;
 create policy "Portfolio owners can delete"
   on public.portfolios
   for delete
   to authenticated
-  using (user_id = (select auth.uid()));
+  using (
+    user_id = (select auth.uid())
+    and (select auth.jwt() ->> 'is_anonymous') = 'false'
+  );
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
@@ -91,6 +179,7 @@ create policy "Portfolio owners can upload profile images"
   to authenticated
   with check (
     bucket_id = 'profile-images'
+    and (select auth.jwt() ->> 'is_anonymous') = 'false'
     and (storage.foldername(name))[1] = (select auth.uid()::text)
   );
 
@@ -101,5 +190,6 @@ create policy "Portfolio owners can delete profile images"
   to authenticated
   using (
     bucket_id = 'profile-images'
+    and (select auth.jwt() ->> 'is_anonymous') = 'false'
     and (storage.foldername(name))[1] = (select auth.uid()::text)
   );

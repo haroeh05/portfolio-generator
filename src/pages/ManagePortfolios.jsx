@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Copy, ExternalLink } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { ensureSession } from '../lib/auth';
+import { requireAuthenticatedUser } from '../lib/auth';
 
 function getStoragePath(publicUrl) {
     const marker = '/storage/v1/object/public/profile-images/';
@@ -27,7 +27,7 @@ export default function ManagePortfolios() {
         setError('');
 
         try {
-            await ensureSession();
+            await requireAuthenticatedUser();
 
             const { data, error: fetchError } = await supabase
                 .from('portfolios')
@@ -72,7 +72,7 @@ export default function ManagePortfolios() {
         setError('');
 
         try {
-            await ensureSession();
+            await requireAuthenticatedUser();
 
             // Delete the database record first. If this fails, retain the image.
             const { error: deleteError } = await supabase
@@ -116,9 +116,8 @@ export default function ManagePortfolios() {
                     <h1>Manage portfolios</h1>
                     <p>View, edit, or delete the portfolios you have saved.</p>
                 </div>
-
                 <Link to="/editor" className="button button-primary">
-                    + New portfolio
+                    + Add portfolio
                 </Link>
             </div>
 
@@ -133,10 +132,6 @@ export default function ManagePortfolios() {
             ) : portfolios.length === 0 ? (
                 <div className="empty-state">
                     <h2>No portfolios yet</h2>
-                    <p>Create your first portfolio to see it here.</p>
-                    <Link to="/editor" className="button button-primary">
-                        Create your first portfolio
-                    </Link>
                 </div>
             ) : (
                 <div className="portfolio-list">

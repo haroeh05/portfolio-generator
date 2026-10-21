@@ -107,6 +107,7 @@ function HomePage({ onGetStarted }) {
                 </nav>
 
                 <div className="nav-actions">
+                    <Link to="/login" className="nav-manage">Sign in</Link>
                     <Link to="/manage" className="nav-manage">My Portfolios</Link>
                     <a
                         className="nav-cta"

@@ -1064,13 +1064,6 @@ a:focus-visible {
   color: #4f46e5;
 }
 
-.app-nav nav .app-nav-cta {
-  padding: 11px 16px;
-  color: #fff;
-  background: #4f46e5;
-  border-radius: 10px;
-}
-
 .page-container {
   width: min(100% - 40px, 1050px);
   margin: 0 auto;
@@ -1108,6 +1101,10 @@ a:focus-visible {
 .portfolio-form {
   display: grid;
   gap: 20px;
+}
+
+.portfolio-form>* {
+  min-width: 0;
 }
 
 .form-card {
@@ -2563,19 +2560,6 @@ textarea:focus-visible {
   color: #d95740;
 }
 
-.app-nav nav .app-nav-cta {
-  min-height: 38px;
-  padding: 0 12px;
-  color: #fff;
-  background: #176b52;
-  border-radius: 4px;
-}
-
-.app-nav .app-nav-cta:hover {
-  color: #fff;
-  background: #10563f;
-}
-
 .page-container {
   max-width: 1180px;
   padding: 48px 24px 76px;
@@ -3690,5 +3674,412 @@ textarea:focus-visible {
     right: 0;
     width: 72px;
     height: auto;
+  }
+}
+
+.editor-live-preview.public-portfolio {
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0 0 20px;
+  padding: 22px;
+}
+
+@media (max-width: 600px) {
+  .editor-live-preview.public-portfolio {
+    padding: 14px;
+  }
+}
+
+.app-nav nav {
+  font-size: 14px;
+}
+
+.page-heading>div>p:last-child {
+  font-size: 15px;
+}
+
+.form-card label {
+  font-size: 14px;
+}
+
+.form-card input:not([type="radio"]):not([type="file"], [type="checkbox"]),
+.form-card textarea {
+  font-size: 15px;
+}
+
+.button,
+.text-danger {
+  font-size: 14px;
+}
+
+.template-option-copy strong {
+  font-size: 14px;
+}
+
+.template-option-copy>span {
+  font-size: 12px;
+}
+
+.portfolio-card-content p,
+.portfolio-meta {
+  font-size: 13px;
+}
+
+.template-tag {
+  font-size: 12px;
+}
+
+.editor-preview-template {
+  font-size: 12px;
+}
+
+.public-portfolio .public-topbar {
+  font-size: 13px;
+}
+
+.public-portfolio .public-kicker {
+  font-size: 11px;
+}
+
+.public-portfolio .public-contact,
+.public-portfolio .public-socials {
+  font-size: 13px;
+}
+
+.public-portfolio .public-skills span {
+  font-size: 12px;
+}
+
+.public-portfolio .public-card h3,
+.public-portfolio .public-timeline h3 {
+  font-size: 15px;
+}
+
+.public-portfolio .public-card p,
+.public-portfolio .public-timeline p {
+  font-size: 13px;
+}
+
+.public-portfolio .public-muted {
+  font-size: 12px !important;
+}
+
+.public-portfolio .public-footer {
+  font-size: 12px;
+}
+
+.app-nav-user {
+  color: #68736b;
+  font-size: 13px;
+}
+
+.app-nav-signout {
+  padding: 8px 12px;
+  color: #34443a;
+  background: #fff;
+  border: 1px solid #d5ddd3;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background-color: #f5f7f2;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0, transparent 31px, #dfe7dc 32px),
+    repeating-linear-gradient(90deg, transparent 0, transparent 31px, #dfe7dc 32px);
+}
+
+.auth-card {
+  width: min(100%, 480px);
+  padding: clamp(24px, 6vw, 42px);
+  background: #fff;
+  border: 1px solid #dfe5dc;
+  border-radius: 8px;
+  box-shadow: 0 14px 42px #20292312;
+}
+
+.auth-card>.auth-brand {
+  margin-bottom: 36px;
+  color: #202923;
+}
+
+.auth-card .eyebrow {
+  margin-bottom: 8px;
+}
+
+.auth-card h1 {
+  margin: 0 0 10px;
+  color: #202923;
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 38px;
+  font-weight: 600;
+}
+
+.auth-intro {
+  margin: 0 0 24px;
+  color: #5f6b62;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.auth-form {
+  display: grid;
+  gap: 18px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 8px;
+  color: #3d4a41;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px 14px;
+  color: #202923;
+  background: #fcfdfa;
+  border: 1px solid #d8dfd5;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.auth-form input:focus {
+  border-color: #176b52;
+  outline: 3px solid #176b5218;
+}
+
+.auth-form .button {
+  width: 100%;
+  min-height: 48px;
+}
+
+.auth-help {
+  color: #68736b;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.auth-switch {
+  margin: 24px 0 0;
+  color: #5f6b62;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-switch button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 12px;
+  color: #176b52;
+  background: #e4f0e8;
+  border: 1px solid #c9dfce;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-switch button:hover {
+  color: #fff;
+  background: #176b52;
+}
+
+@media (max-width: 720px) {
+  .app-nav-user {
+    display: none;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY UPDATE: LARGER, CLEARER TEXT SITE-WIDE
+   Added without removing the existing Folio Studio styling.
+   ========================================================= */
+html {
+  font-size: 18px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* Navigation, labels, supporting copy, and compact UI text */
+.nav-links,
+.nav-manage,
+.nav-cta,
+.button-primary,
+.button-secondary,
+.hero-description,
+.hero-trust,
+.floating-note,
+.benefits div,
+.section-heading p,
+.start-section p,
+.template-card-info p,
+.process-steps p,
+.app-nav nav,
+.app-nav nav a,
+.app-nav-user,
+.app-nav-signout,
+.page-heading>div>p:last-child,
+.form-card label,
+.form-card input:not([type="radio"]):not([type="file"]):not([type="checkbox"]),
+.form-card textarea,
+.button,
+.text-danger,
+.template-option-copy strong,
+.template-option-copy>span,
+.portfolio-card-content p,
+.portfolio-meta,
+.template-tag,
+.editor-preview-template,
+.public-portfolio .public-topbar,
+.public-portfolio .public-kicker,
+.public-portfolio .public-contact,
+.public-portfolio .public-socials,
+.public-portfolio .public-skills span,
+.public-portfolio .public-card h3,
+.public-portfolio .public-timeline h3,
+.public-portfolio .public-card p,
+.public-portfolio .public-timeline p,
+.public-portfolio .public-muted,
+.public-portfolio .public-footer,
+.auth-intro,
+.auth-form label,
+.auth-help,
+.auth-switch,
+.auth-form input {
+  font-size: 1rem !important;
+}
+
+/* Small decorative labels should remain readable but not dominate */
+.eyebrow,
+.paper-label,
+.paper-kicker,
+.paper-heading,
+.mock-section-label,
+.template-count {
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* Main headings scale smoothly across screen sizes */
+.hero h1 {
+  font-size: clamp(2.7rem, 5vw, 4rem);
+  line-height: 1.15;
+}
+
+.section-heading h2,
+.start-section h2 {
+  font-size: clamp(2rem, 3.5vw, 2.6rem);
+  line-height: 1.25;
+}
+
+.page-heading h1,
+.auth-card h1,
+.public-state h1 {
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  line-height: 1.25;
+}
+
+/* Form controls and actions are easier to read and tap */
+input,
+textarea,
+select,
+button,
+.button,
+.nav-cta,
+.button-primary,
+.button-secondary {
+  font: inherit;
+}
+
+input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),
+textarea,
+select {
+  min-height: 48px;
+  line-height: 1.5;
+}
+
+button,
+.button,
+.nav-cta,
+.button-primary,
+.button-secondary {
+  min-height: 48px;
+  line-height: 1.4;
+}
+
+/* Improve readability of portfolio descriptions and sections */
+.public-portfolio,
+.public-portfolio p,
+.public-portfolio li,
+.public-card p,
+.public-timeline p,
+.public-about {
+  line-height: 1.75;
+}
+
+/* Keep focus indicators clear for keyboard users */
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid #4f46e5;
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  html {
+    font-size: 17px;
+  }
+
+  .nav-links,
+  .nav-links a,
+  .nav-manage,
+  .nav-cta,
+  .app-nav nav a,
+  .hero-description,
+  .hero-trust,
+  .benefits div,
+  .section-heading p,
+  .start-section p,
+  .form-card label,
+  .form-card input:not([type="radio"]):not([type="file"]):not([type="checkbox"]),
+  .form-card textarea,
+  .button,
+  .portfolio-card-content p,
+  .portfolio-meta,
+  .public-portfolio .public-contact,
+  .public-portfolio .public-socials,
+  .public-portfolio .public-card p,
+  .public-portfolio .public-timeline p,
+  .public-portfolio .public-footer,
+  .auth-intro,
+  .auth-form label,
+  .auth-help,
+  .auth-switch,
+  .auth-form input {
+    font-size: 1rem !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+  }
+
+  .section-heading h2,
+  .page-heading h1,
+  .auth-card h1,
+  .public-state h1 {
+    font-size: 2rem;
   }
 }
