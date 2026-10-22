@@ -2,6 +2,9 @@
 import { ArrowRight, Layers3, Sparkles, Check, MoveUpRight } from "lucide-react";
 import { Eye } from "lucide-react";
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../lib/useAuth";
 
 const templates = [
     {
@@ -93,6 +96,29 @@ function TemplateMockup({ style }) {
 
 function HomePage({ onGetStarted }) {
     const startWith = (template) => onGetStarted?.(template);
+    const navigate = useNavigate();
+    const { user, loading } = useAuth();
+
+    const isSignedIn = Boolean(user && !user.is_anonymous);
+
+    const accountName =
+        user?.user_metadata?.username ||
+        user?.user_metadata?.user_name ||
+        user?.email?.split("@")[0] ||
+        "Account";
+
+    const handleSignOut = async () => {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            console.error("Sign out failed:", error.message);
+            window.alert("Unable to sign out. Please try again.");
+            return;
+        }
+
+        navigate("/login");
+    };
+
 
     return (
         <div className="app-shell">
@@ -107,14 +133,49 @@ function HomePage({ onGetStarted }) {
                 </nav>
 
                 <div className="nav-actions">
-                    <Link to="/login" className="nav-manage">Sign in</Link>
-                    <Link to="/manage" className="nav-manage">My Portfolios</Link>
+                    {!loading && (
+                        isSignedIn ? (
+                            <>
+                                <div
+                                    className="nav-account-chip"
+                                    title={`Signed in as ${accountName}`}
+                                >
+                                    <span className="nav-account-avatar">
+                                        {accountName.charAt(0).toUpperCase()}
+                                    </span>
+
+                                    <span className="nav-account-name">
+                                        {accountName}
+                                    </span>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="nav-signout"
+                                    onClick={handleSignOut}
+                                >
+                                    Sign out
+                                </button>
+                            </>
+                        ) : (
+                            <Link to="/login" className="nav-manage">
+                                Sign in
+                            </Link>
+                        )
+                    )}
+
+                    <Link to="/manage" className="nav-manage">
+                        My Portfolios
+                    </Link>
+
                     <a
                         className="nav-cta"
                         href="#templates"
                         onClick={(event) => {
                             event.preventDefault();
-                            document.querySelector('#templates')?.scrollIntoView({ behavior: 'smooth' });
+                            document.querySelector("#templates")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
                         }}
                     >
                         Make Portfolio <ArrowRight size={16} />

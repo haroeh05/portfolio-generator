@@ -3895,8 +3895,9 @@ textarea:focus-visible {
 }
 
 @media (max-width: 720px) {
-  .app-nav-user {
-    display: none;
+  .app-nav-account {
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 }
 
@@ -4081,5 +4082,249 @@ button,
   .auth-card h1,
   .public-state h1 {
     font-size: 2rem;
+  }
+}
+
+/* =========================================================
+   CONSISTENT ACCOUNT CHIP AND SIGN-OUT BUTTON
+   Shared styling for the homepage and the authenticated app nav.
+   ========================================================= */
+.nav-account-chip,
+.app-nav-user {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 42px;
+  max-width: 210px;
+  padding: 7px 13px 7px 10px;
+  color: #245b38;
+  background: #edf8f0;
+  border: 1px solid #cce8d5;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.nav-account-avatar {
+  display: inline-flex;
+  flex: 0 0 27px;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  color: #245b38;
+  background: #d0ebd8;
+  border: 1px solid #b6ddc2;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.nav-account-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Both homepage and app sign-out buttons use the same appearance. */
+.nav-signout,
+.app-nav-signout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 8px 15px;
+  color: #34443a;
+  background: #fff;
+  border: 1px solid #d5ddd3;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.nav-signout:hover,
+.app-nav-signout:hover {
+  color: #245b38;
+  background: #f1f7f2;
+  border-color: #b8d8c0;
+}
+
+.nav-account-chip:focus-visible,
+.nav-signout:focus-visible,
+.app-nav-user:focus-visible,
+.app-nav-signout:focus-visible {
+  outline: 2px solid #43885a;
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .nav-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nav-account-chip,
+  .app-nav-user {
+    max-width: 150px;
+  }
+}
+
+/* =========================================================
+   FINAL SHARED NAVIGATION + PUBLISHING CONTROL OVERRIDES
+   Keep homepage, Manage Portfolios, and Portfolio Editor consistent.
+   ========================================================= */
+
+.app-nav-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Account label: same rounded green chip on every page. */
+.nav-account-chip,
+.app-nav-user {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  min-height: 42px !important;
+  max-width: 210px !important;
+  padding: 7px 13px 7px 10px !important;
+  color: #245b38 !important;
+  background: #edf8f0 !important;
+  border: 1px solid #cce8d5 !important;
+  border-radius: 999px !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  text-decoration: none !important;
+}
+
+/* If app navigation has an account wrapper, do not let legacy rules hide it. */
+.app-nav-user {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.nav-account-avatar {
+  display: inline-flex;
+  flex: 0 0 27px;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  color: #245b38;
+  background: #d0ebd8;
+  border: 1px solid #b6ddc2;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.nav-account-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-signout,
+.app-nav-signout {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 42px !important;
+  padding: 8px 15px !important;
+  color: #34443a !important;
+  background: #fff !important;
+  border: 1px solid #d5ddd3 !important;
+  border-radius: 9px !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  cursor: pointer;
+  box-sizing: border-box !important;
+  transition: color .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.nav-signout:hover,
+.app-nav-signout:hover {
+  color: #245b38 !important;
+  background: #f1f7f2 !important;
+  border-color: #b8d8c0 !important;
+}
+
+/* Compact publishing control: checkbox stays next to its label. */
+.publish-card .publish-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  align-self: flex-start;
+  width: fit-content !important;
+  max-width: 100%;
+  gap: 12px !important;
+  margin: 12px 0 0 !important;
+  padding: 14px 18px !important;
+  color: #26352b;
+  background: #f5f8f4 !important;
+  border: 1px solid #dce7dc !important;
+  border-radius: 12px !important;
+  font-weight: 650 !important;
+  line-height: 1.4;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.publish-card .publish-toggle input[type="checkbox"] {
+  appearance: auto !important;
+  -webkit-appearance: checkbox !important;
+  display: inline-block !important;
+  flex: 0 0 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  margin: 0 !important;
+  accent-color: #378653;
+  cursor: pointer;
+}
+
+.publish-card .publish-toggle span {
+  display: inline-block;
+  margin: 0 !important;
+  white-space: normal;
+}
+
+.publish-card .field-help {
+  margin-top: 12px !important;
+}
+
+@media (max-width: 720px) {
+
+  .app-nav-user,
+  .nav-account-chip {
+    display: inline-flex !important;
+    max-width: 150px !important;
+  }
+
+  .publish-card .publish-toggle {
+    gap: 10px !important;
+    padding: 12px 14px !important;
   }
 }

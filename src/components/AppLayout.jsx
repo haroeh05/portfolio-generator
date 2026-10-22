@@ -9,6 +9,12 @@ export default function AppLayout() {
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
+    const accountName =
+        user?.user_metadata?.username ||
+        user?.user_metadata?.user_name ||
+        user?.email?.split('@')[0] ||
+        'Account';
+
     async function handleSignOut() {
         setError('');
         try {
@@ -27,8 +33,26 @@ export default function AppLayout() {
                 <nav>
                     <Link to="/">Home</Link>
                     <Link to="/manage">My Portfolios</Link>
-                    <span className="app-nav-user">{user?.user_metadata?.username || user?.email}</span>
-                    <button type="button" className="app-nav-signout" onClick={handleSignOut}>Sign out</button>
+                    <div className="app-nav-account">
+                        <div
+                            className="nav-account-chip app-nav-user"
+                            title={`Signed in as ${accountName}`}
+                        >
+                            <span className="nav-account-avatar">
+                                {accountName.charAt(0).toUpperCase()}
+                            </span>
+                            <span className="nav-account-name">
+                                {accountName}
+                            </span>
+                        </div>
+                        <button
+                            type="button"
+                            className="nav-signout app-nav-signout"
+                            onClick={handleSignOut}
+                        >
+                            Sign out
+                        </button>
+                    </div>
                 </nav>
             </header>
 

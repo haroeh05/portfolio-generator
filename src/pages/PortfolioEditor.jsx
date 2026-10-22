@@ -120,6 +120,7 @@ export default function PortfolioEditor() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({ full_name: '', contact_number: '' });
 
     useEffect(() => {
         let active = true;
@@ -171,6 +172,36 @@ export default function PortfolioEditor() {
 
     function updateField(field, value) {
         setForm(previous => ({ ...previous, [field]: value }));
+    }
+
+    // Names may contain letters (including accented letters), spaces, apostrophes,
+    // periods, and hyphens. Numbers and other symbols are not accepted.
+    function handleFullNameChange(value) {
+        const cleaned = value.replace(/[^\p{L}\p{M}\s'.’\-]/gu, '');
+        updateField('full_name', cleaned);
+
+        setFieldErrors(previous => ({
+            ...previous,
+            full_name: cleaned !== value
+                ? 'Full name can contain letters, spaces, apostrophes, periods, and hyphens only.'
+                : (cleaned.trim() && !/^[\p{L}\p{M}]+(?:[ '\u2019.-][\p{L}\p{M}.]+)*$/u.test(cleaned.trim())
+                    ? 'Please enter a valid name using letters only.'
+                    : ''),
+        }));
+    }
+
+    function handleContactNumberChange(value) {
+        const cleaned = value.replace(/\D/g, '');
+        updateField('contact_number', cleaned);
+
+        setFieldErrors(previous => ({
+            ...previous,
+            contact_number: cleaned !== value
+                ? 'Contact number can contain numbers (0–9) only.'
+                : (cleaned && (cleaned.length < 7 || cleaned.length > 15)
+                    ? 'Enter a contact number with 7 to 15 digits.'
+                    : ''),
+        }));
     }
 
     function updateItem(section, index, field, value) {
@@ -229,14 +260,24 @@ export default function PortfolioEditor() {
 
         const name = form.full_name.trim();
         const email = form.email.trim();
+        const nextFieldErrors = { full_name: '', contact_number: '' };
 
         if (!name) {
-            setError('Please enter your full name.');
-            return;
+            nextFieldErrors.full_name = 'Please enter your full name.';
+        } else if (name.length > 150) {
+            nextFieldErrors.full_name = 'Your name must be 150 characters or fewer.';
+        } else if (!/^[\p{L}\p{M}]+(?:[ '\u2019.-][\p{L}\p{M}.]+)*$/u.test(name)) {
+            nextFieldErrors.full_name = 'Use letters, spaces, apostrophes, periods, or hyphens only.';
         }
 
-        if (name.length > 150) {
-            setError('Your name must be 150 characters or fewer.');
+        const contactNumber = form.contact_number.trim();
+        if (contactNumber && !/^\d{7,15}$/.test(contactNumber)) {
+            nextFieldErrors.contact_number = 'Contact number must contain only 7 to 15 digits.';
+        }
+
+        setFieldErrors(nextFieldErrors);
+        if (nextFieldErrors.full_name || nextFieldErrors.contact_number) {
+            setError('Please correct the highlighted fields before saving.');
             return;
         }
 
@@ -406,9 +447,24 @@ export default function PortfolioEditor() {
                         <input
                             value={form.full_name}
                             maxLength={150}
-                            onChange={e => updateField('full_name', e.target.value)}
+                            autoComplete="name"
+                            aria-invalid={Boolean(fieldErrors.full_name)}
+                            aria-describedby={fieldErrors.full_name ? 'full-name-error' : undefined}
+                            onChange={e => handleFullNameChange(e.target.value)}
+                            onBlur={() => {
+                                const name = form.full_name.trim();
+                                setFieldErrors(previous => ({
+                                    ...previous,
+                                    full_name: !name
+                                        ? 'Please enter your full name.'
+                                        : !/^[\p{L}\p{M}]+(?:[ '\u2019.-][\p{L}\p{M}.]+)*$/u.test(name)
+                                            ? 'Use letters, spaces, apostrophes, periods, or hyphens only.'
+                                            : '',
+                                }));
+                            }}
                             required
                         />
+                        {fieldErrors.full_name && <span id="full-name-error" className="field-error" style={{ color: "#b42318", fontSize: "0.9rem", display: "block", marginTop: "0.35rem" }} role="alert">{fieldErrors.full_name}</span>}
                     </label>
 
                     <div className="form-grid">
@@ -424,9 +480,26 @@ export default function PortfolioEditor() {
                         <label>
                             Contact number
                             <input
+                                type="tel"
+                                inputMode="numeric"
+                                autoComplete="tel"
                                 value={form.contact_number}
-                                onChange={e => updateField('contact_number', e.target.value)}
+                                maxLength={15}
+                                placeholder="Digits only"
+                                aria-invalid={Boolean(fieldErrors.contact_number)}
+                                aria-describedby={fieldErrors.contact_number ? 'contact-number-error' : undefined}
+                                onChange={e => handleContactNumberChange(e.target.value)}
+                                onBlur={() => {
+                                    const number = form.contact_number.trim();
+                                    setFieldErrors(previous => ({
+                                        ...previous,
+                                        contact_number: number && !/^\d{7,15}$/.test(number)
+                                            ? 'Enter a contact number with 7 to 15 digits.'
+                                            : '',
+                                    }));
+                                }}
                             />
+                            {fieldErrors.contact_number && <span id="contact-number-error" className="field-error" style={{ color: "#b42318", fontSize: "0.9rem", display: "block", marginTop: "0.35rem" }} role="alert">{fieldErrors.contact_number}</span>}
                         </label>
                     </div>
 
